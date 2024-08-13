@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Professionnel</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease-out;
+            width: 90%;
+            max-width: 1200px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 150px; /* Ajustez selon la taille de votre logo */
+            height: auto;
+        }
+        #datePicker {
+            flex-grow: 1;
+            margin-left: 20px;
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #1E303D; /* Utilisation de la première couleur */
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        th {
+            background-color: #1E303D;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e8f4f8;
+            transition: background-color 0.3s ease;
+        }
+        .conge {
+            background-color: #FD6183;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        .ferie {
+            background-color: #1D1D1B;
+            color: white;
+            animation: sparkle 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes sparkle {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        .team-header {
+            background-color: #1D1D1B;
+            color: white;
+            font-size: 1.2em;
+        }
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="C:\Users\ULTRAPC\Desktop\1x\Fullfiller logo.png" alt="Logo de l'entreprise" class="logo">
+            <input type="date" id="datePicker">
+        </div>
+        <table id="planningTable">
+            <tr>
+                <th colspan="3" class="team-header">Équipe EXE</th>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <th>Matin</th>
+                <th>Après-midi</th>
+            </tr>
+            <tr>
+                <td>Youssef</td>
+                <td class="morning"></td>
+                <td class="afternoon"></td>
+            </tr>
+            <tr>
+                <td>Samir</td>
+                <td class="morning"></td>
+                <td class="afternoon"></td>
+            </tr>
+            <tr>
+                <td>Mohamed</td>
+                <td class="morning"></td>
+                <td class="afternoon"></td>
+            </tr>
+            <tr>
+                <th colspan="3" class="team-header">Équipe Créa</th>
+            </tr>
+            <tr>
+                <td>Khalid</td>
+                <td class="morning"></td>
+                <td class="afternoon"></td>
+            </tr>
+            <tr>
+                <td>Kenza</td>
+                <td class="morning"></td>
+                <td class="afternoon"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const planning = {
+            Youssef: { matin: "8:00 - 13:00", apresmidi: "14:00 - 17:00" },
+            Samir: { matin: "9:00 - 14:00", apresmidi: "15:00 - 18:00" },
+            Mohamed: { matin: "9:00 - 13:30", apresmidi: "14:30 - 18:00" },
+            Khalid: { matin: "9:30 - 13:30", apresmidi: "14:30 - 18:30" },
+            Kenza: { matin: "9:30 - 14:30", apresmidi: "15:30 - 18:30" }
+        };
+
+        const conges = {
+            Youssef: { debut: new Date(2024, 7, 12), fin: new Date(2024, 8, 1) },
+            Khalid: { debut: new Date(2024, 7, 26), fin: new Date(2024, 8, 1) }
+        };
+
+        const joursFeries = {
+            "2024-01-01": "Jour de l'An",
+            "2024-04-01": "Lundi de Pâques",
+            "2024-05-01": "Fête du Travail",
+            "2024-05-08": "Victoire 1945",
+            "2024-05-09": "Ascension",
+            "2024-05-20": "Lundi de Pentecôte",
+            "2024-07-14": "Fête Nationale",
+            "2024-08-15": "Assomption",
+            "2024-11-01": "Toussaint",
+            "2024-11-11": "Armistice 1918",
+            "2024-12-25": "Noël"
+        };
+
+        function updatePlanning() {
+            const date = new Date(datePicker.value);
+            const dateString = date.toISOString().split('T')[0];
+
+            document.querySelectorAll('tr').forEach(row => {
+                const name = row.cells[0]?.textContent;
+                if (planning[name]) {
+                    const morningCell = row.querySelector('.morning');
+                    const afternoonCell = row.querySelector('.afternoon');
+
+                    if (joursFeries[dateString]) {
+                        const ferieName = joursFeries[dateString];
+                        morningCell.innerHTML = `<span class="emoji">🎉</span>${ferieName}`;
+                        afternoonCell.innerHTML = `<span class="emoji">🎉</span>${ferieName}`;
+                        morningCell.classList.add('ferie');
+                        afternoonCell.classList.add('ferie');
+                    } else if (conges[name] && date >= conges[name].debut && date <= conges[name].fin) {
+                        morningCell.innerHTML = `<span class="emoji">🏖️</span>Congé`;
+                        afternoonCell.innerHTML = `<span class="emoji">🏖️</span>Congé`;
+                        morningCell.classList.add('conge');
+                        afternoonCell.classList.add('conge');
+                    } else {
+                        morningCell.textContent = planning[name].matin;
+                        afternoonCell.textContent = planning[name].apresmidi;
+                        morningCell.classList.remove('conge', 'ferie');
+                        afternoonCell.classList.remove('conge', 'ferie');
+                    }
+                }
+            });
+        }
+
+        const datePicker = document.getElementById('datePicker');
+        datePicker.valueAsDate = new Date();
+        datePicker.addEventListener('change', updatePlanning);
+
+        updatePlanning();
+    </script>
+</body>
+</html>
